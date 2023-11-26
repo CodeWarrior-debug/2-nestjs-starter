@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import config from 'src/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformResponseInterceptor } from './interceptors/transform-respons/transform-respons.interceptor';
 
 @Module({
   imports: [
@@ -9,7 +11,12 @@ import config from 'src/config';
       load: [config],
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformResponseInterceptor,
+    },
+  ],
   exports: [],
 })
 export class CoreModule {}
