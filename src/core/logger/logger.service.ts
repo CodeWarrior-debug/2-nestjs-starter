@@ -6,12 +6,27 @@ export class LoggerService implements NestLogger {
   private readonly logger: winston.Logger;
 
   constructor() {
+    const { combine, timestamp, printf, colorize, json } = winston.format;
+
+    // Determine if the application is running in development mode
+    const isDevelopment = process.env.NODE_ENV === 'development';
+
+    // Choose a format based on the environment
+    const logFormat = isDevelopment
+      ? combine(
+          colorize(),
+          timestamp(),
+          printf(({ level, message, timestamp, context, meta, trace }) => {
+            return `${timestamp} ${level}: [${context}] ${message} ${
+              meta ? JSON.stringify(meta) : ''
+            } ${trace ? JSON.stringify(trace) : ''}`;
+          }),
+        )
+      : combine(timestamp(), json());
+
     this.logger = winston.createLogger({
       level: 'info', // Set your desired default log level
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-      ),
+      format: logFormat,
       transports: [
         new winston.transports.Console(),
         // Add other transports like file or cloud-based logging solutions
