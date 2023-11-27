@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import config from 'src/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformResponseInterceptor } from './interceptors/transform-respons/transform-respons.interceptor';
-
+import { LoggerService } from './logger/logger.service';
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,7 +17,8 @@ import { TransformResponseInterceptor } from './interceptors/transform-respons/t
       provide: APP_INTERCEPTOR,
       useClass: TransformResponseInterceptor,
     },
+    LoggerService,
   ],
-  exports: [],
+  exports: [LoggerService],
 })
 export class CoreModule {}
